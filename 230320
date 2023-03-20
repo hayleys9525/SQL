@@ -1,0 +1,158 @@
+/*
+* 실습과제 1-2 IS NULL 사용 
+*/
+SELECT a.ENAME
+       , a.SAL
+       , a.EMPNO
+FROM EMP a
+WHERE mgr IS NULL AND comm IS NULL
+;
+
+/*
+* SELECT 문: 원하는 레코드(행)만 가져오는 명령어
+* FROM 테이블명: 데이터 장소
+*/
+SELECT *
+FROM EMP a;
+
+/*
+* 오라클 함수
+*
+* data type: 문자열, 숫자, 날짜, 시퀀스(숫자)
+*
+*/
+SELECT *
+FROM n$sqlfn_metadata v
+WHERE v.name = 'NVL'
+;
+
+/*
+* 문자열 함수
+* UPPER() 대문자 변환
+* LOWER() 소문자 변환
+* LENGTH() 문자열 길이
+*
+* Sample
+* upper(myColumn) as to_upper_str
+*
+*/
+SELECT ename 
+       ,upper(ename) AS to_upper_name
+       ,lower(ename) AS to_lower_name
+;
+
+/*
+* TRIM: 공란 제거
+*
+*/
+SELECT trim(ename)
+FROM EMP
+;
+
+/*
+* concat 문자열 연결 (더하기)
+*/
+SELECT empno
+      , ename
+      , concat(empno, ename)
+      , concat(empno, '   ')
+FROM emp
+WHERE ename = upper('smith')
+;
+
+/*
+* REPLACE 문자열 교체
+* 주요 예시: 전화번호, 이메일, 집주소 등등
+*/
+SELECT '010-1234-5678' AS mobile_phone
+      , replace('010-1234-5678', '-', '') AS replace
+FROM dual;
+
+/*
+* LPAD, RPAD 문자열을 채우기하는 함수
+*
+*/
+SELECT lpad('ORA_1234_XE', 20) AS lpad_20
+      ,rpad('ORA_1234_XE', 20) AS rpad_20
+FROM dual
+;
+
+SELECT *
+FROM EMP EMP
+WHERE E.empno >= :input_no -- host var
+;
+
+/* 
+* NUMBER 숫자를 다루는 함수들
+* 정수(INTEGER), 부동소수(FLOAT) - 소수점이 있는 숫자
+* 부동소수의 경우, 소수점 이하 정밀도(precision) 차이가 발생
+*/
+
+SELECT round(3.1428,3) AS round()
+      ,round(123.456789, 3) AS round1
+      ,trunc(123.4567, 2) AS trunc()
+      ,trunc(123.4567, 2) AS trunc1
+FROM dual
+;
+
+SELECT ceil(3.14) AS ceil()
+      ,floor(3.14) AS floor()
+      ,mod(15,6) AS mod()
+      ;
+
+/*
+* DATE 날짜를 다루는 함수들
+*
+* 2023-04-01 minus 1 day --> ???
+* MARCH, 01, 2023
+*
+* 날짜를 표현하는 일련번호 숫자가 존재
+*
+*/
+SELECT sysdate AS now
+      , sysdate - 1 AS yesterd
+      , sysdate + 10 AS ten_days_from_now
+      FROM dual
+      ;
+
+-- : month : 입력 변수를 받아 월수 계산
+SELECT add_months(sysdate, :month)
+FROM dual
+;
+
+-- month_between(날짜1, 날짜2)
+SELECT ename
+      ,hiredate
+      ,MONTHS_BETWEEN(hiredate, sysdate)
+FROM emp
+;
+
+-- 실습과제 p160
+SELECT SYSDATE, ROUND(SYSDATE, 'CC') AS FORMAT_CC,
+          ROUND(SYSDATE, 'YYYY') AS FORMAT_YYYY,
+          ROUND(SYSDATE, 'Q') AS FORMAT_Q,
+          ROUND(SYSDATE, 'DDD') AS FORMAT_DDD,
+          ROUND(SYSDATE, 'HH') AS FORMAT_HH,
+FROM DUAL;  -- 날짜에 ROUND 반올림 함수
+
+/*
+* 형 변환 (Cast, up-cast, down-cast)
+*
+* down-cast : 큰 수를 담는 데이터형에서
+*             작은 수를 담는 데이터 형으로 명시적 변환
+* 
+* 예시: 1234.3456 --> 234.3 (데이터가 짤림)
+*/
+
+SELECT to_char(sysdate, 'YYYY/MM/DD HH24')
+FROM dual
+; -- 24시간 표시
+
+SELECT to_char(sysdate, 'DD HH24:MI:SS')
+FROM dual
+; -- 시분초까지 표시
+
+SELECT sysdate
+      ,TO_CHAR(SYSDATE, 'MM') AS MM
+      ,TO_CHAR(SYSDATE, 'MON', 'NLS_DATE_LANGUAGE = KOREAN') AS MON_KOR
+FROM DUAL;
