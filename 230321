@@ -1,0 +1,182 @@
+SELECT avg(sal), '10' AS dno
+FROM emp
+WHERE DEPTNO = 10
+
+UNION ALL
+
+SELECT avg(sal), '20' AS dno
+FROM emp
+WHERE DEPTNO = 20
+
+UNION ALL
+
+SELECT avg(sal), '30' AS dno
+FROM emp
+WHERE DEPTNO = 30
+;
+
+/*
+* group by 키워드 사용하여 스마트하게 집계
+*/
+SELECT DEPTNO
+      , count(sal)
+      , max(sal)
+      , min(sal)
+      , sum(sal)
+FROM emp
+GROUP BY DEPTNO
+ORDER BY DEPTNO
+;
+
+SELECT *
+FROM emp, DEPTNO
+WHERE emp.DEPTNO = dept.DEPTNO
+ORDER BY empno
+;
+
+SELECT *
+FROM emp JOIN dept
+  ON emp.DEPTNO = dept.DEPTNO
+; 
+
+SELECT E.empno
+      , e.HIREDATE
+      , d.DNAME
+      , d.JOB
+      , e.sal
+FROM emp E JOIN dept D  
+  ON E.DEPTNO = D.DEPTNO
+  ;
+
+SELECT
+FROM emp E
+     , dept D
+WHERE e.DEPTNO = DEPTNO
+ORDER d.DEPTNO, e.EMPNO
+;
+
+SELECT round( avg( e.sal ), 0) AS avg_sal
+     , sum( e.sal ) AS sum_sal
+     , max( e.sal ) AS max_sal
+     , min( e.sal ) AS min_sal
+     , count( e.sal ) AS cnt_sal
+FROM emp E
+   , dept D
+WHERE e.DEPTNO = d.DEPTNO AND e.sal < 2000
+GROUP BY d.DNAME
+ORDER BY e.sal DESC
+; 
+
+/*
+* JOIN 함수로 SALGRADE 부여 후 grade로 그룹별 직원 수
+*/
+
+SELECT s.grade
+      , count(e.ENAME) AS emp_cnt -- 임직원수 집계
+FROM emp e, salgrade s
+WHERE e.sal BETWEEN s.LOCAL AND s.HISAL
+GROUP BY s.grade                  -- grade 기준으로 그룹
+ORDER BY e.ENAME                  -- 임직원수가 많은 수부터 출력
+;
+
+SELECT E.ENAME
+      ,E.DEPTNO
+      ,E.JOB
+      ,S.GRADE
+      ,E.SAL 
+      ,S.LOSAL AS low_rng
+      ,S.HISAL AS high_rng
+FROM emp E, SALGRADE s
+WHERE E.SAL BETWEEN S.LOSAL AND S.HISAL
+;
+
+SELECT e1.empno
+      ,e1.ENAME
+      ,e1.MGR
+      ,e2.EMPNO AS mgr_no
+      ,e2.ename AS mgr_name
+FROM emp e1, emp e2
+WHERE e1.mgr = e2.EMPNO(+)
+;
+
+/*
+* 표준 SQL로 RIGHT-OUTER-JOIN 출력
+*/
+SELECT 
+FROM emp e1 RIGHT OUTER JOIN emp e2
+ON e1.mgr = e2.EMPNO 
+;
+
+/*
+ * EMP, DEPT, SALGRADE, self-join EMP
+ * 4개 테이블을 활용하여 값을 출력
+ */
+SELECT d.DEPTNO
+      ,d.DNAME
+      ,e1.EMPNO
+      ,e1.ENAME
+      ,e1.MGR
+      ,e1.SAL
+      ,s.LOSAL
+      ,s.HISAL
+      ,s.GRADE
+      ,e2.EMPNO AS mgr_no
+      ,e2.ename AS mgr_name
+FROM emp e1
+    ,dept d
+    ,SALGRADE s
+    ,emp e2
+WHERE e1.EMPNO(+) = d.DEPTNO 
+  AND e1.sal BETWEEN s.LOSAL AND s.HISAL 
+  AND e1.mgr = e2.EMPNO 
+;
+
+/*
+ * 표준 SQL 출력
+ * 
+ * EMP e1, DEPT d, SALGRADE s, EMP e2
+ */
+SELECT 
+FROM emp e1 RIGHT JOIN dept D 
+       ON e1.DEPTNO = d.DEPTNO 
+       LEFT OUTER JOIN SALGRADE s 
+       ON (e1.sal >= s.LOSAL AND e1.HISAL)
+       LEFT OUTER JOIN EMP e2
+       ON (e1.mgr = e2.EMPNO)       
+;
+
+/*
+ * 단일행 서브 쿼리 - 쿼리 안에 쿼리 문장을 사용
+ * 
+ * SELECT 쿼리의 결과는 --> 2차원 테이블에 불과
+ */
+
+SELECT sal
+FROM emp E
+WHERE E.ENAME = 'SMITH'
+;
+
+/*
+ * 다중행 서브 쿼리 - 쿼리 안에 쿼리 문장을 사용
+ * 
+ * SELECT 쿼리의 결과는 --> 2개 이상의 값으로 된 테이블
+ */
+
+SELECT DEPTNO, max(sal) -- sub_query에 해당
+FROM EMP 
+GROUP BY DEPTNO -- 그룹별 최고 샐러리 출력
+ORDER BY DEPTNO 
+;
+
+SELECT *
+FROM EMP 
+WHERE sal = ANY (sub_query)
+;
+
+SELECT min(sal), max(sal)
+FROM EMP 
+WHERE DEPTNO = 30
+;
+
+
+
