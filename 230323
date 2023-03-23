@@ -1,0 +1,95 @@
+SELECT *
+FROM v$database
+;
+
+SELECT *
+FROM v$instance
+;
+
+SELECT *
+FROM v$session
+;
+
+SELECT *
+FROM v$parameter
+;
+
+SELECT *
+FROM dept_dcl
+;
+
+ROLLBACK;
+
+--COMMIT 실행하는 경우
+INSERT INTO dept_tcl
+VALUES (50, 'NETWORK', 'SEOUL')
+;
+
+UPDATE dept_tcl
+SET loc = 'BUSAN'
+WHERE deptno = 20
+;
+
+/*
+ * LOCK 테스트
+ * 
+ * 동일한 계정으로 DBeaver 세션과 SQL*Plus 세션을 열어
+ * 데이터를 수정하는 동시 작업을 수행
+ */
+
+UPDATE dept_tcl
+SET loc = 'DAEGU'
+WHERE deptno = 30;
+
+-- 튜닝 전 후 비교
+SELECT *
+FROM EMP 
+WHERE ename || ' ' || job = 'WARD SALESMAN'
+;
+
+SELECT *
+FROM EMP 
+WHERE ename = 'WARD'
+AND job = 'SALESMAN'
+;
+
+--튜닝 전 후 비교
+SELECT DISTINCT E.EMPNO -- 불필요한 중복 제거 작업을 실행
+       , E.ENAME
+       , D.DEPTNO
+FROM emp E, dept D
+WHERE E.DEPTNO = D.DEPTNO ;
+
+SELECT E.EMPNO
+      ,E.ENAME
+      ,D.DEPTNO
+FROM emp E, dept D
+WHERE E.DEPTNO = D.DEPTNO EMPNO ;
+
+--튜닝 전후 비교
+SELECT *
+FROM emp 
+WHERE DEPTNO = '10'
+UNION        -- UNION은 레코드를 합집합한 후 중복 제거
+SELECT *
+FROM EMP 
+WHERE DEPTNO = '20'
+;
+
+SELECT *
+FROM EMPLOYEES
+;
+
+SELECT 
+FROM EMPLOYEES e
+   , DEPARTMENTS d
+   , jobs j
+   , LOCATIONS l
+   , COUNTRIES c
+   , REGIONS r
+WHERE e.DEPARTMENT_ID = d.DEPARTMENT_ID
+  AND d.LOCATION_ID = l.LOCATION_ID
+ ;
+
+
+
